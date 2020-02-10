@@ -6,17 +6,25 @@
 
 package liteminer
 
-// Enums for MsgType
+// MsgType Enums
 type MsgType int
 
 const (
+	//ClientHello Constant
 	ClientHello MsgType = iota
+	//MinerHello Constant
 	MinerHello
+	// Error Constant
 	Error
+	//ProofOfWork Constant
 	ProofOfWork
+	// StatusUpdate Constant
 	StatusUpdate
+	// MineRequest Constant
 	MineRequest
+	// Transaction Constant
 	Transaction
+	// BusyPool Constant
 	BusyPool
 )
 
@@ -30,7 +38,7 @@ type Message struct {
 	Hash, Nonce  uint64
 }
 
-// Creates a ClientHello message – these messages are sent from clients to a
+// ClientHelloMsg Creates a ClientHello message – these messages are sent from clients to a
 // pool upon connecting to it.
 func ClientHelloMsg() *Message {
 	return &Message{
@@ -38,7 +46,7 @@ func ClientHelloMsg() *Message {
 	}
 }
 
-// Creates a MinerHello message – these messages are sent from miners to a
+// MinerHelloMsg Creates a MinerHello message – these messages are sent from miners to a
 // pool upon connecting to it.
 func MinerHelloMsg() *Message {
 	return &Message{
@@ -46,7 +54,7 @@ func MinerHelloMsg() *Message {
 	}
 }
 
-// Creates an Error message
+// ErrorMsg Creates an Error message
 func ErrorMsg(err string) *Message {
 	return &Message{
 		Type: Error,
@@ -54,7 +62,7 @@ func ErrorMsg(err string) *Message {
 	}
 }
 
-// Creates a ProofOfWork message – these messages are sent from a miner to a
+// ProofOfWorkMsg Creates a ProofOfWork message – these messages are sent from a miner to a
 // pool after completing a mine request.
 func ProofOfWorkMsg(data string, nonce uint64, hash uint64) *Message {
 	return &Message{
@@ -65,42 +73,44 @@ func ProofOfWorkMsg(data string, nonce uint64, hash uint64) *Message {
 	}
 }
 
-// Creates a StatusUpdate message – these messages are sent from a miner to a
+// StatusUpdateMsg Creates a StatusUpdate message – these messages are sent from a miner to a
 // pool while mining.
 func StatusUpdateMsg(numProcessed uint64) *Message {
 	// TODO: Students should implement this.
 	return &Message{
-		Type: StatusUpdate,
-		NumProcessed: numProcessed
+		Type:         StatusUpdate,
+		NumProcessed: numProcessed,
 	}
 }
 
-// Creates a MineRequest message – these messages are sent from a pool
+// MineRequestMsg Creates a MineRequest message – these messages are sent from a pool
 // to a miner when distributing work.
 func MineRequestMsg(data string, lower uint64, upper uint64) *Message {
 	// TODO: Students should implement this.
 	return &Message{
-		Type: MineRequest,
-		Data: data,
-		lower: lower,
-		upper: upper
+		Type:  MineRequest,
+		Data:  data,
+		Lower: lower,
+		Upper: upper,
 	}
 }
 
-// Creates a Transaction message – these messages are sent from a client to a
+// TransactionMsg Creates a Transaction message – these messages are sent from a client to a
 // pool.
 func TransactionMsg(data string, upper uint64) *Message {
 	// TODO: Students should implement this.
 	return &Message{
-		Type: Transaction,
-		Data: data,
-		upper: upper
+		Type:  Transaction,
+		Data:  data,
+		Upper: upper,
 	}
 }
 
-// Creates a BusyPool message – these messages are sent from a busy pool to a
+// BusyPoolMsg Creates a BusyPool message – these messages are sent from a busy pool to a
 // client trying to connect.
 func BusyPoolMsg() *Message {
 	// TODO: Students should implement this.
-	return &Message{}
+	return &Message{
+		Type: BusyPool,
+	}
 }

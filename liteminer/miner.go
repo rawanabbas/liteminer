@@ -98,7 +98,24 @@ func (m *Miner) receiveFromPool(conn MiningConn) {
 func (m *Miner) sendHeartBeats(conn MiningConn) {
 	// TODO: Students should send a StatusUpdate message every HEARTBEAT_FREQ
 	// while mining.
-	return
+	ticker := time.NewTicker(HeartbeatFreq)
+	for {
+		select {
+		case t := <-ticker.C:
+			if m.Mining.Load() {
+				Out.Printf("Sending Heartbeat: [%v]\n", t.Format(time.RFC3339))
+				SendMsg(conn, StatusUpdateMsg(m.NumProcessed.Load()))
+			}
+		default:
+			if m.IsShutdown.Load() {
+				Out.Printf("Shutting down: [%v]", time.Now().Format(time.RFC3339))
+				conn.Conn.Close()
+				ticker.Stop()
+				return
+			}
+		}
+	}
+
 }
 
 // Mine is given a data string, a lower bound (inclusive), and an upper bound
@@ -106,8 +123,20 @@ func (m *Miner) sendHeartBeats(conn MiningConn) {
 // corresponds to the lowest hash value. With each value processed in the range,
 // NumProcessed should be incremented.
 func (m *Miner) Mine(data string, lower, upper uint64) (nonce uint64) {
-	// TODO: Students should implement this. Make sure to use the Hash method
-	// in hash.go
+	m.Mining.Store(true)
+	nonce = lower
+	hash := Hash(data, lower)
+	var tmp uint64
+
+	for i := lower + 1; i < upper; i++ {
+		tmp = Hash(data, i)
+		if tmp < hash {
+			nonce = i
+			hash = tmp
+		}
+		m.NumProcessed.Inc()
+	}
+	m.Mining.Store(false)
 	return
 }
 
