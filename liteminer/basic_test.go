@@ -3,7 +3,7 @@ package liteminer
 import "testing"
 
 func TestBasic(t *testing.T) {
-	p, err := CreatePool("")
+	p, err := CreatePool("3000")
 	if err != nil {
 		t.Errorf("Received error %v when creating pool", err)
 	}

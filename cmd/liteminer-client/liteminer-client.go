@@ -10,7 +10,7 @@ import (
 	"flag"
 
 	"github.com/abiosoft/ishell"
-	"github.com/brown-csci1380/stencil-s20/liteminer/liteminer"
+	"github.com/rawanabbas/liteminer/liteminer"
 
 	"strconv"
 	"strings"

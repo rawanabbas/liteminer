@@ -11,6 +11,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/fatih/color"
 	"go.uber.org/atomic"
 )
 
@@ -57,6 +58,8 @@ func (m *Miner) receiveFromPool(conn MiningConn) {
 			return
 		}
 
+		Debug.Printf("Waiting for Mine Request Message from Pool!")
+
 		msg, err := RecvMsg(conn)
 		if err != nil {
 			if err == io.EOF {
@@ -81,10 +84,12 @@ func (m *Miner) receiveFromPool(conn MiningConn) {
 			)
 		}
 
+		color.Green("Message recieved \n -> Data : %v \n -> Lower: %v \n -> Upper: %v", msg.Data, msg.Lower, msg.Upper)
 		// Service the mine request
 		nonce := m.Mine(msg.Data, msg.Lower, msg.Upper)
-
+		color.Green("Nonce is %v", nonce)
 		// Send result
+		Debug.Printf("Sending Proof of Work to Pool!")
 		res := ProofOfWorkMsg(msg.Data, nonce, Hash(msg.Data, nonce))
 		SendMsg(conn, res)
 	}

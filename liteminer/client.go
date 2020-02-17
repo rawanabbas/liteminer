@@ -11,6 +11,8 @@ import (
 	"io"
 	"net"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 // Client represents a LiteMiner client
@@ -99,7 +101,7 @@ func (c *Client) processPool(conn MiningConn) {
 
 			return
 		case ProofOfWork:
-			Debug.Printf("Pool %v found nonce %v\n", conn.Conn.RemoteAddr(), msg.Nonce)
+			Debug.Printf(color.GreenString("Pool %v found nonce %v\n"), conn.Conn.RemoteAddr(), msg.Nonce)
 
 			c.mutex.Lock()
 			c.Nonces[conn.Conn.RemoteAddr()] = int64(msg.Nonce)
@@ -139,7 +141,10 @@ func (c *Client) Mine(data string, upperBound uint64) (map[net.Addr]int64, error
 
 	// Send transaction to connected pool(s)
 	tx := TransactionMsg(data, upperBound)
+	fmt.Printf("Transaction Message %v\n", tx)
+	Debug.Printf("Transaction Message %v", tx)
 	for _, conn := range c.PoolConns {
+		Debug.Printf("Sending Message to Pool %v", conn.Conn.RemoteAddr())
 		SendMsg(conn, tx)
 	}
 	c.mutex.Unlock()
